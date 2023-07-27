@@ -1,4 +1,4 @@
-export class CreateItemDto {
+export interface Item {
     nombreItem: string
     fechaItem?: string
     diasItem?: string
