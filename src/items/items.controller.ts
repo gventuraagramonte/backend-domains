@@ -12,6 +12,7 @@ export class ItemsController {
     return this.itemsService.create(createItemDto);
   }
 
+  // Primero debes treaer toda la data
   @Get()
   findAll() {
     return this.itemsService.findAll();
@@ -22,10 +23,17 @@ export class ItemsController {
     return this.itemsService.filterItems(query)
   }
 
+  @Get('refresh')
+  refreshItems(){
+    return this.itemsService.updateData()
+  }
+  
+  // Al ultimo los ID's
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.itemsService.findOne(id);
   }
+  
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto) {

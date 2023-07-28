@@ -33,23 +33,78 @@ export class ItemsService {
     }
   }
 
+  // Trae todos los certificados que han sido ingresados exitosamente
   async findAll() {
     return await this.itemModel.find();
   }
 
+  // Filtra certificados por nombre 3 primero digitos
   filterItems(filter:string){
     const regex = new RegExp(filter,'i')
     return this.itemModel.find({nombreItem: regex}).exec()
   }
 
+  // Filtra certificados por id
   async findOne(id: string) {
     const oneItem = await this.itemModel.findById(id)
     if(!oneItem) throw new NotFoundException(`Item with ${id} not found`)
     return oneItem
   }
 
+  // Actualiza certificados
   update(id: number, updateItemDto: UpdateItemDto) {
     return `This action updates a #${id} item`;
+  }
+
+  // actualiza certificados de manera interna
+  async internUpdate(idItem:string, updateItemDto: UpdateItemDto) {
+    const updateItem = await this.itemModel.findByIdAndUpdate(idItem,updateItemDto,{new: true})
+        return updateItem
+  }
+
+  // Actualizara la data si hay algun cambio
+  async updateData(){
+    // Puedo recibir todos los datos
+    const items = await this.findAll()
+    
+    // Evaluar si trae data o no
+    items.map(async (item)=>{
+      const {id,nombreItem,issuer, diasItem, fechaItem, statusItem} = item
+      // voy a traer la nueva data
+      try {
+        const newData = await this.obtainMetadataCertificates(nombreItem)
+        console.log("Validando informacion en el try")
+        // Valido que no haya cambios
+        if(
+            newData.active !== statusItem || 
+            (newData.days+"") !== diasItem || 
+            newData.validTo !== fechaItem || 
+            newData.issuer !== issuer
+          ){  
+            // Aqui llamaremos al actualizador
+            await this.internUpdate(id, {
+              nombreItem,
+              diasItem: (newData.days+""),
+              fechaItem: newData.validTo,
+              issuer: newData.issuer,
+              statusItem: true
+            })
+          }
+      } catch (error) {
+        if(error.errno === -3008){
+          console.log("entro en el catch")
+          await this.internUpdate(id,{
+            nombreItem,
+            statusItem: false
+          })
+        }
+        console.error(error)
+      }
+      
+    })
+    
+    // Retorna confirmacion
+    return "Actualizacion exitosa"
   }
 
   remove(id: number) {
