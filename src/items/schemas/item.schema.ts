@@ -1,6 +1,5 @@
 import { Schema } from "mongoose";
 
-
 export const ItemSchema = new Schema({
     nombreItem: {
         type: String,
@@ -17,5 +16,8 @@ export const ItemSchema = new Schema({
     },
     issuer: {
         type: String
+    },
+    user: {
+        type: Object
     }
 })

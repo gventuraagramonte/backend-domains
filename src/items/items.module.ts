@@ -4,6 +4,7 @@ import { ItemsService } from './items.service';
 import { ItemsController } from './items.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ItemSchema } from './schemas/item.schema';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { ItemSchema } from './schemas/item.schema';
         name: 'Item',
         schema: ItemSchema
       }
-    ])
+    ]),
+    AuthModule
   ],
   controllers: [ItemsController],
   providers: [ItemsService]
