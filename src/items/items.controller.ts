@@ -2,14 +2,21 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { ItemsService } from './items.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
+import { Auth, GetUser } from '../auth/decorators';
+import { ValidRoles } from '../auth/interfaces';
+import { User } from '../auth/interfaces/user.interface';
 
 @Controller('items')
 export class ItemsController {
   constructor(private readonly itemsService: ItemsService) {}
 
   @Post()
-  create(@Body() createItemDto: CreateItemDto) {
-    return this.itemsService.create(createItemDto);
+  @Auth(ValidRoles.admin)
+  create(
+    @Body() createItemDto: CreateItemDto,
+    @GetUser() user:User
+    ) {
+    return this.itemsService.create(createItemDto,user);
   }
 
   // Primero debes treaer toda la data
@@ -36,8 +43,9 @@ export class ItemsController {
   
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto) {
-    return this.itemsService.update(+id, updateItemDto);
+  @Auth(ValidRoles.admin)
+  update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto, @GetUser() user:User) {
+    return this.itemsService.update(+id, updateItemDto, user);
   }
 
   @Delete(':id')

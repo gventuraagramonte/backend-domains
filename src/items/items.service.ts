@@ -5,6 +5,7 @@ import * as sslCertificate from 'get-ssl-certificate'
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { Item } from './interfaces/item.interface';
+import { User } from '../auth/interfaces/user.interface';
 
 @Injectable()
 export class ItemsService {
@@ -13,7 +14,7 @@ export class ItemsService {
     @InjectModel('Item') private readonly itemModel: Model<Item>
   ){}
 
-  async create(createItemDto: CreateItemDto) {
+  async create(createItemDto: CreateItemDto, user:User) {
     const {nombreItem} = createItemDto
     const plainItem = nombreItem.toLocaleLowerCase()
     
@@ -24,7 +25,8 @@ export class ItemsService {
         fechaItem: data.validTo,
         diasItem: data.days,
         issuer: data.issuer,
-        statusItem: data.active
+        statusItem: data.active,
+        user
       })
       
       return item;
@@ -52,7 +54,7 @@ export class ItemsService {
   }
 
   // Actualiza certificados
-  update(id: number, updateItemDto: UpdateItemDto) {
+  update(id: number, updateItemDto: UpdateItemDto, user:User) {
     return `This action updates a #${id} item`;
   }
 
