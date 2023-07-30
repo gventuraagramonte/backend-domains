@@ -43,7 +43,7 @@ export class AuthService {
         const {password, email} = loginUserDto
 
         // Trae los campos especificos para usarlos
-        const user = await this.userModel.findOne({email},{password:1, email:1})
+        const user = await this.userModel.findOne({email},{password:1, email:1,fullName:1})
 
         if(!user)
             throw new UnauthorizedException('Credentiales are not valid')
@@ -54,6 +54,7 @@ export class AuthService {
         return {
             email: user.email,
             password: user.password,
+            fullName: user.fullName,
             token: this.getJwtToken({email: user.email})
         }
         // TODO: Retornar el JWT
